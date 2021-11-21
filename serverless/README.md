@@ -1,5 +1,5 @@
 Создание / удалением snapshot c использованием serverless
- Содержание
+Содержание
 Цель
 Описание
 Пометим диски для создания снимков
@@ -56,148 +56,148 @@ yc compute disk remove-labels --id <id диска> --labels snapshot-critical
 
 create-snapshot-critical
 
-// Префикс имени диска ГГГГ-ММ-ДД
-let today = new Date();
-var yyyymmdd = today.toISOString().substring(0, 10);
-var hh = today.getHours().toString();
-var mm = today.getMinutes().toString();
-var ss = today.getSeconds().toString();
-var yyyymmddhhmmss = yyyymmdd + "-" + hh + mm + ss;
+    // Префикс имени диска ГГГГ-ММ-ДД
+    let today = new Date();
+    var yyyymmdd = today.toISOString().substring(0, 10);
+    var hh = today.getHours().toString();
+    var mm = today.getMinutes().toString();
+    var ss = today.getSeconds().toString();
+    var yyyymmddhhmmss = yyyymmdd + "-" + hh + mm + ss;
 
-// Метка диска жизненный цикл
-let label = {
-   "lifecycle": "7"
-};
+    // Метка диска жизненный цикл
+    let label = {
+    "lifecycle": "7"
+    };
 
-const ycsdk = require("yandex-cloud/api/compute/v1");
-const FOLDER_ID = process.env.FOLDER_ID;
-const snapshotService = new ycsdk.SnapshotService();
-const diskService = new ycsdk.DiskService();
+    const ycsdk = require("yandex-cloud/api/compute/v1");
+    const FOLDER_ID = process.env.FOLDER_ID;
+    const snapshotService = new ycsdk.SnapshotService();
+    const diskService = new ycsdk.DiskService();
 
-async function handler(event, context) {
+    async function handler(event, context) {
 
-    const diskList = await diskService.list({
-        folderId: FOLDER_ID,
-    });
+        const diskList = await diskService.list({
+            folderId: FOLDER_ID,
+        });
 
-    for (const disk of diskList.disks) {
-        if ('snapshot-critical' in disk.labels) {
-            snapshotService.create({
-                folderId: FOLDER_ID,
-                diskId: disk.id,
-                name: disk.name + "-" + yyyymmddhhmmss,
-                labels: label
-            });
+        for (const disk of diskList.disks) {
+            if ('snapshot-critical' in disk.labels) {
+                snapshotService.create({
+                    folderId: FOLDER_ID,
+                    diskId: disk.id,
+                    name: disk.name + "-" + yyyymmddhhmmss,
+                    labels: label
+                });
+            }
         }
-    }
 
-   return {
-        statusCode: 200,
-        body: JSON.stringify({
-            event: event,
-            context: context,
-            labels: label
-        })
-    }
+    return {
+            statusCode: 200,
+            body: JSON.stringify({
+                event: event,
+                context: context,
+                labels: label
+            })
+        }
 
-}
-exports.handler = handler;
+    }
+    exports.handler = handler;
 Создание моментальных снимков по умолчанию с жизненным циклом 14 днейPermalink
 Будет запускаться один раз в неделю
 
 create-snapshot-default
 
-// Префикс имени диска ГГГГ-ММ-ДД
-let today = new Date();
-var yyyymmdd = today.toISOString().substring(0, 10);
-var hh = today.getHours().toString();
-var mm = today.getMinutes().toString();
-var ss = today.getSeconds().toString();
-var yyyymmddhhmmss = yyyymmdd + "-" + hh + mm + ss;
+    // Префикс имени диска ГГГГ-ММ-ДД
+    let today = new Date();
+    var yyyymmdd = today.toISOString().substring(0, 10);
+    var hh = today.getHours().toString();
+    var mm = today.getMinutes().toString();
+    var ss = today.getSeconds().toString();
+    var yyyymmddhhmmss = yyyymmdd + "-" + hh + mm + ss;
 
-// Метка диска жизненный цикл
-let label = {
-   "lifecycle": "21"
-};
+    // Метка диска жизненный цикл
+    let label = {
+    "lifecycle": "21"
+    };
 
-const ycsdk = require("yandex-cloud/api/compute/v1");
-const FOLDER_ID = process.env.FOLDER_ID;
-const snapshotService = new ycsdk.SnapshotService();
-const diskService = new ycsdk.DiskService();
+    const ycsdk = require("yandex-cloud/api/compute/v1");
+    const FOLDER_ID = process.env.FOLDER_ID;
+    const snapshotService = new ycsdk.SnapshotService();
+    const diskService = new ycsdk.DiskService();
 
-async function handler(event, context) {
+    async function handler(event, context) {
 
-    const diskList = await diskService.list({
-        folderId: FOLDER_ID,
-    });
+        const diskList = await diskService.list({
+            folderId: FOLDER_ID,
+        });
 
-    for (const disk of diskList.disks) {
-        if ('snapshot-default' in disk.labels) {
-            snapshotService.create({
-                folderId: FOLDER_ID,
-                diskId: disk.id,
-                name: disk.name + "-" + yyyymmddhhmmss,
-                labels: label
-            });
+        for (const disk of diskList.disks) {
+            if ('snapshot-default' in disk.labels) {
+                snapshotService.create({
+                    folderId: FOLDER_ID,
+                    diskId: disk.id,
+                    name: disk.name + "-" + yyyymmddhhmmss,
+                    labels: label
+                });
+            }
         }
-    }
 
-   return {
-        statusCode: 200,
-        body: JSON.stringify({
-            event: event,
-            context: context,
-            labels: label
-        })
-    }
+    return {
+            statusCode: 200,
+            body: JSON.stringify({
+                event: event,
+                context: context,
+                labels: label
+            })
+        }
 
-}
-exports.handler = handler;
+    }
+    exports.handler = handler;
 Удаление моментальных снимков с истекшим жизненным цикломPermalink
 Будет выполнятся каждый день
 
 delete-snapshot-lifecycle
 
-// yc compute snapshot list - список дисков
-// yc compute snapshot get <id> - метка диска
-// yc compute snapshot update --id <id>  --labels lifecycle=14 // изменение метки
+    // yc compute snapshot list - список дисков
+    // yc compute snapshot get <id> - метка диска
+    // yc compute snapshot update --id <id>  --labels lifecycle=14 // изменение метки
 
-const today = Date.parse(new Date());
-const ycsdk = require("yandex-cloud/api/compute/v1");
-const FOLDER_ID = process.env.FOLDER_ID;
-const snapshotService = new ycsdk.SnapshotService();
-const diskService = new ycsdk.DiskService();
+    const today = Date.parse(new Date());
+    const ycsdk = require("yandex-cloud/api/compute/v1");
+    const FOLDER_ID = process.env.FOLDER_ID;
+    const snapshotService = new ycsdk.SnapshotService();
+    const diskService = new ycsdk.DiskService();
 
-module.exports.handler = async function (event, context) {
+    module.exports.handler = async function (event, context) {
 
-    const snapList = await snapshotService.list({
-    folderId: FOLDER_ID
-    });
+        const snapList = await snapshotService.list({
+        folderId: FOLDER_ID
+        });
 
-    for (const snapshot of snapList.snapshots) {
-        if ('lifecycle' in snapshot.labels) {
-            let createdAt = snapshot.createdAt.seconds.low * 1000;
-            let diff = (today - createdAt) / (60 * 60 * 24 * 1000);
-            let snapid = snapshot.id;
-            let d = snapshot.labels.lifecycle;
-            //throw new Error(diff);
-            //throw new Error(d);
-            if (diff > d) {
-                snapshotService.delete({
-                folderId: FOLDER_ID,
-                snapshotId: snapshot.id
-                });
+        for (const snapshot of snapList.snapshots) {
+            if ('lifecycle' in snapshot.labels) {
+                let createdAt = snapshot.createdAt.seconds.low * 1000;
+                let diff = (today - createdAt) / (60 * 60 * 24 * 1000);
+                let snapid = snapshot.id;
+                let d = snapshot.labels.lifecycle;
+                //throw new Error(diff);
+                //throw new Error(d);
+                if (diff > d) {
+                    snapshotService.delete({
+                    folderId: FOLDER_ID,
+                    snapshotId: snapshot.id
+                    });
+                }
             }
         }
-    }
 
-    return {
-        statusCode: 200,
-        today: `${today}`,
-        body: FOLDER_ID//,
-        //createdAt: `${createdAt}`,
+        return {
+            statusCode: 200,
+            today: `${today}`,
+            body: FOLDER_ID//,
+            //createdAt: `${createdAt}`,
+        };
     };
-};
 Создадим триггеры таймерыPermalink
 Описание cron выражение https://cloud.yandex.ru/docs/functions/concepts/trigger/timer#cron-expression
 
