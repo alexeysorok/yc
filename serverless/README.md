@@ -227,4 +227,8 @@ cron-snapshot-delete-lifecycle
 Cron-выражение: 00 12 ? \* \* \* Функция: delete-snapshot-lifecycle
 
 Просмотр моментальных снимков
+<<<<<<< HEAD
 (yc compute snapshot list –format json | ConvertFrom-Json) | Select id,name,labels,status
+=======
+    (yc compute snapshot list –format json | ConvertFrom-Json) | Select id,name,labels,status
+>>>>>>> 8c26d16c5f14cb8314f34e582dec53decc7cc243
